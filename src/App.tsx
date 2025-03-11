@@ -1,13 +1,18 @@
-import React from 'react';
+
 import TodoApp from './TodoApp';
 import { MURVProvider } from '@murv/provider';
+import {Button} from "@murv/button"
 
-const App: React.FC = () => {
+const App = () => {
     return (
         <div>
-           
-            <MURVProvider tenant="Flipkart" themeVariant="light"><TodoApp /></MURVProvider>
-        </div>
+
+            <MURVProvider themeVariant='light'>
+                <TodoApp />
+                
+            </MURVProvider>
+   
+        </div>  
     );
 };
 

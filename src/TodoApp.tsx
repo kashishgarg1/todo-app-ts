@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import './TodoApp.css';
-
+import { Button } from '@murv/button';
+import Checkbox from '@murv/checkbox';
+import { CheckboxWithLabel } from "@murv/checkbox";
+import Input from '@murv/input';
 
 interface Task {
     id: number;
@@ -30,7 +33,7 @@ function TodoApp() {
 
         fetchAllTask();
     }, []);
-    
+
     const create = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!name.trim()) return;
@@ -52,13 +55,13 @@ function TodoApp() {
 
     const update = async (id: number, checked: boolean) => {
         const updatedTaskName = editingTaskName.trim() || tasks.find(task => task.id === id)?.name || '';
-    
-        const updatedTask: Task = { 
-            name: updatedTaskName, 
-            completed: checked, 
+
+        const updatedTask: Task = {
+            name: updatedTaskName,
+            completed: checked,
             id
         };
-    
+
         try {
             const response = await fetch(`http://localhost:8080/tasks/${id}`, {
                 method: "PUT",
@@ -73,7 +76,7 @@ function TodoApp() {
             console.error('Failed to update task:', error);
         }
     };
-    
+
     const del = async (id: number) => {
         if (window.confirm('Are you sure you want to delete this task?')) {
             try {
@@ -105,40 +108,87 @@ function TodoApp() {
         <div className="todo-container">
             <h1>Tasks List</h1>
             <form className="input-container" onSubmit={create}>
-                <input
+                <Input.TextBoxInput
+                    onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setName(e.target.value)}
+                    placeholder="Add a new task"
                     type="text"
                     value={name}
-                    onChange={e => setName(e.target.value)}
-                    placeholder="Add a new task"
                 />
-                <button type="submit">Add</button>
+
+                <Button
+                    buttonStyle="danger"
+                    buttonType="ascent"
+                    size="small"
+                    type="submit"
+                >
+                    Add
+                </Button>
             </form>
             <ul className="todo-list">
                 {tasks.map(task => (
                     <li key={task.id} className="todo-item">
                         <div>
-                            <input
-                                type="checkbox"
+
+
+                            <CheckboxWithLabel
+                                id={`checkbox-with-label-${task.id}`}
                                 checked={task.completed}
+                                checkboxPosition="right"
+                               
                                 onChange={e => update(task.id, e.target.checked)}
                             />
                             {editingTaskId === task.id ? (
                                 <form onSubmit={handleEditSubmit}>
-                                    <input
-                                        ref={inputRef}
+
+                                    <Input.TextBoxInput
+                                        placeholder="Edit task"
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setEditingTaskName(e.target.value)}
                                         type="text"
                                         value={editingTaskName}
-                                        onChange={e => setEditingTaskName(e.target.value)}
                                     />
-                                    <button type="submit">Save</button>
-                                    <button type="button" onClick={() => setEditingTaskId(null)}>Cancel</button>
+
+
+                                    <Button
+                                        buttonStyle="danger"
+                                        buttonType="floating"
+                                        size="small"
+                                        type="submit"
+                                    >
+                                        Save
+                                    </Button>
+
+                                    <Button
+                                        onClick={() => setEditingTaskId(null)}
+                                        buttonStyle="danger"
+                                        buttonType="ascent"
+                                        size="small"
+                                    >
+                                        Cancel
+                                    </Button>
+
+
                                 </form>
                             ) : (
                                 <span>{task.name}</span>
                             )}
                         </div>
-                        <button onClick={() => startEditing(task)}>Edit</button>
-                        <button onClick={() => del(task.id)}>Delete</button>
+                        <Button
+                            onClick={() => startEditing(task)}
+                            buttonStyle="danger"
+                            buttonType="ascent"
+                            size="small"
+                        >
+                            Edit
+                        </Button>
+
+                        <Button
+                            onClick={() => del(task.id)}
+                            buttonStyle="danger"
+                            buttonType="ascent"
+                            size="small"
+                        >
+                            Delete
+                        </Button>
                     </li>
                 ))}
             </ul>
